@@ -132,11 +132,14 @@ def avg_shortest_path(G, num_samples=1000, seed=None):
         float: The estimated average shortest path length.
     """
     rng = np.random.default_rng(seed)
-    nodes = list(G.adj_list.keys())
+    nodes = np.arange(G.num_nodes)
     num_nodes = len(nodes)
     total_path_length = 0
     sampled_pairs = 0
 
+    if len(nodes) < 2:
+        return 0 # there is only one way and it is the empty way with distance 0
+    
     while sampled_pairs < num_samples:
         i, j = rng.choice(num_nodes, size=2, replace=False)
         path_length = shortest_path(G, i, j)
@@ -145,6 +148,64 @@ def avg_shortest_path(G, num_samples=1000, seed=None):
             sampled_pairs += 1
 
     return total_path_length / num_samples if sampled_pairs > 0 else -1
+
+
+def is_connected(G):
+    """ Check if the graph is connected """
+    start_node = 0
+    queue = deque([start_node])
+    visited = set([start_node])
+    while queue:
+        node = queue.popleft()
+        for neighbor in G.edges_from(node):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+    return len(visited) == G.num_nodes
+
+def simulate_average_path_length(n, p, seed=None):
+    while True:
+        graph = create_graph(n, p, seed)
+        if is_connected(graph):
+            return avg_shortest_path(graph, 1000, seed)
+
+def run_simulation():
+    n = 1000  # Number of nodes
+    ps = np.concatenate((np.arange(0.01, 0.05, 0.01), np.arange(0.05, 0.51, 0.05)))
+    avg_path_lengths = []
+
+    for p in ps:
+        avg_path_length = simulate_average_path_length(n, p, seed=42)
+        avg_path_lengths.append(avg_path_length)
+        print(f"p = {p:.2f}, Average Path Length: {avg_path_length:.4f}")
+
+    # Plotting the results
+    plt.figure(figsize=(10, 6))
+    plt.plot(ps, avg_path_lengths, marker='o', linestyle='-', color='b')
+    plt.title('Average Shortest Path Length vs. Probability of Edge Creation')
+    plt.xlabel('Probability p')
+    plt.ylabel('Average Shortest Path Length')
+    plt.grid(True)
+    plt.savefig('average_path_length.pdf')
+    plt.show()
+
+
+#simulation of 9(a) 9(b) and 9(c)
+def simulation():
+    n = 10  # Number of nodes in the graph
+    p = 0.3  # Probability of edge creation
+    seed = 42  # Seed for reproducibility
+
+    # Create the graph
+    graph = create_graph(n, p, seed)
+    
+    # Print the graph's adjacency matrix
+    graph.print_graph()
+    # Compute and print the average shortest path length
+    avg_path_length = avg_shortest_path(graph, num_samples=1000, seed=seed)
+    print(f"Average shortest path length (estimated from {1000} samples): {avg_path_length:.4f}")
+
+
 
 # Problem 10(a)
 def create_fb_graph(filename = "facebook_combined.txt"):
@@ -165,14 +226,6 @@ def create_fb_graph(filename = "facebook_combined.txt"):
 
 # Example of usage and simulation
 if __name__ == "__main__":
-    # Create a graph instance with 5 nodes
-    graph = UndirectedGraph(5)
-    
-    # Add some edges
-    graph.add_edge(0, 1)
-    graph.add_edge(0, 2)
-    graph.add_edge(1, 2)
-    graph.add_edge(3, 4)
-    
-    # Print the adjacency matrix to visualize the graph
-    graph.print_graph()
+    run_simulation()
+
+
