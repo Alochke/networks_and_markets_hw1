@@ -14,40 +14,62 @@ import matplotlib.pyplot as plt
 
 # Implement the methods in this class as appropriate. Feel free to add other methods
 # and attributes as needed. 
+import random
+
 class UndirectedGraph:
-    def __init__(self,number_of_nodes):
-        '''Assume that nodes are represented by indices/integers between 0 and number_of_nodes - 1.'''
-        # TODO: Implement this method
-        pass
-    
+    def __init__(self, number_of_nodes):
+        """
+        Initialize the graph with the specified number of nodes.
+        Args:
+            number_of_nodes (int): The total number of nodes in the graph. Nodes are numbered from 0 to number_of_nodes - 1.
+        """
+        self.num_nodes = number_of_nodes
+        self.adj_list = {i: [] for i in range(number_of_nodes)}
+
     def add_edge(self, nodeA, nodeB):
-        ''' Adds an undirected edge to the graph, between nodeA and nodeB. Order of arguments should not matter'''
-        # TODO: Implement this method
-        pass
+        """
+        Add an undirected edge to the graph between nodeA and nodeB.
+        Args:
+            nodeA (int): Index of the first node.
+            nodeB (int): Index of the second node.
+        """
+        if nodeB not in self.adj_list[nodeA]:
+            self.adj_list[nodeA].append(nodeB)
+            self.adj_list[nodeB].append(nodeA)
     
     def edges_from(self, nodeA):
-        ''' This method shold return a list of all the nodes nodeB such that nodeA and nodeB are 
-        connected by an edge'''
-        # TODO: Implement this method
-        pass
-    
-    def check_edge(self, nodeA, nodeB):
-        ''' This method should return true is there is an edge between nodeA and nodeB, and false otherwise'''
-        # TODO: Implement this method
-        pass
-    
+        """
+        Return a list of all nodes connected to nodeA by an edge.
+        Args:
+            nodeA (int): Index of the node to retrieve edges from.
+        Returns:
+            list[int]: List of nodes that have an edge with nodeA.
+        """
+        return self.adj_list[nodeA]
+
     def number_of_nodes(self):
-        ''' This method should return the number of nodes in the graph'''
-        # TODO: Implement this method
-        pass
+        """
+        Return the number of nodes in the graph.
+        Returns:
+            int: The number of nodes in the graph.
+        """
+        return self.num_nodes
 
-
-# Problem 9(a)
-def create_graph(n,p):
-    ''' Given number of nodes n and probability p, output an UndirectedGraph with n nodes, where each
-    pair of nodes is connected by an edge with probability p'''
-    # TODO: Implement this method
-    pass
+def create_graph(n, p):
+    """
+    Generate an undirected graph with n nodes. Each pair of nodes is connected with a probability p.
+    Args:
+        n (int): Number of nodes in the graph.
+        p (float): Probability of an edge between any two nodes.
+    Returns:
+        UndirectedGraph: The generated graph.
+    """
+    graph = UndirectedGraph(n)
+    for i in range(n):
+        for j in range(i + 1, n):
+            if random.random() < p:
+                graph.add_edge(i, j)
+    return graph
 
 # Problem 9(b)
 def shortest_path(G,i,j):
