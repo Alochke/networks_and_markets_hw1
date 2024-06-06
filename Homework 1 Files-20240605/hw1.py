@@ -11,7 +11,6 @@
 # please contact us before sumission if you want another package approved.
 import numpy as np
 import matplotlib.pyplot as plt
-from collections import deque
 import random
 # Implement the methods in this class as appropriate. Feel free to add other methods
 # and attributes as needed. 
@@ -70,6 +69,7 @@ class UndirectedGraph:
         print(self.adj_matrix)
 
 
+
 # Problem 9(a)
 def create_graph(n, p, seed=None):
     """
@@ -90,7 +90,7 @@ def create_graph(n, p, seed=None):
                 graph.add_edge(i, j)
     return graph
 # Problem 9(b)
-def shortest_path(G, i, j):
+def shortest_path(G: UndirectedGraph, i: int, j: int) -> int:
     """
     Finds the shortest path from node i to node j using a BFS algorithm.
     Args:
@@ -104,11 +104,11 @@ def shortest_path(G, i, j):
         return 0
     
     # Initialize a queue for BFS
-    queue = deque([(i, 0)])  # Each element is a tuple (current_node, current_distance)
+    queue = [(i, 0)]  # Each element is a tuple (current_node, current_distance)
     visited = set([i])  # Keep track of visited nodes to prevent revisiting
     
     while queue:
-        current_node, current_distance = queue.popleft()
+        current_node, current_distance = queue.pop(0)
         
         # Iterate through each neighbor of the current node
         for neighbor in G.edges_from(current_node):
@@ -153,10 +153,10 @@ def avg_shortest_path(G, num_samples=1000, seed=None):
 def is_connected(G):
     """ Check if the graph is connected """
     start_node = 0
-    queue = deque([start_node])
+    queue = [start_node]
     visited = set([start_node])
     while queue:
-        node = queue.popleft()
+        node = queue.pop(0)
         for neighbor in G.edges_from(node):
             if neighbor not in visited:
                 visited.add(neighbor)
@@ -207,14 +207,13 @@ def simulation():
 
 
 
-# Problem 10(a)
-def create_fb_graph(filename = "facebook_combined.txt"):
-    ''' This method should return a undirected version of the facebook graph as an instance of the UndirectedGraph class.
-    You may assume that the input graph has 4039 nodes.'''    
-    # TODO: Implement this method 
-    # for line in open(filename):
-    #     pass
-    pass
+# # Problem 10(a)
+# def create_fb_graph(filename = "facebook_combined.txt") -> UndirectedGraph:
+#     ''' This method should return a undirected version of the facebook graph as an instance of the UndirectedGraph class.
+#     You may assume that the input graph has 4039 nodes.'''    
+    
+#     for line in open(filename):
+        
 
 # Please include any additional code you use for analysis, or to generate graphs, here.
 # Problem 9(c) if applicable.
