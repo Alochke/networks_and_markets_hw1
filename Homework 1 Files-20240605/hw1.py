@@ -13,7 +13,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 # Implement the methods in this class as appropriate. Feel free to add other methods
-# and attributes as needed. 
+# and attributes as needed.
+
+FB_GRAPH_SIZE = 4039
+
 class UndirectedGraph:
     def __init__(self, number_of_nodes):
         """
@@ -132,6 +135,7 @@ def avg_shortest_path(G, num_samples=1000, seed=None):
         float: The estimated average shortest path length.
     """
     rng = np.random.default_rng(seed)
+    
     nodes = np.arange(G.num_nodes)
     num_nodes = len(nodes)
     total_path_length = 0
@@ -169,13 +173,12 @@ def simulate_average_path_length(n, p, seed=None):
         if is_connected(graph):
             return avg_shortest_path(graph, 1000, seed)
 
-def run_simulation():
-    n = 1000  # Number of nodes
+def run_simulation(num_of_nodes, name_of_file):
     ps = np.concatenate((np.arange(0.01, 0.05, 0.01), np.arange(0.05, 0.51, 0.05)))
     avg_path_lengths = []
 
     for p in ps:
-        avg_path_length = simulate_average_path_length(n, p, seed=42)
+        avg_path_length = simulate_average_path_length(num_of_nodes, p, seed=42)
         avg_path_lengths.append(avg_path_length)
         print(f"p = {p:.2f}, Average Path Length: {avg_path_length:.4f}")
 
@@ -186,7 +189,7 @@ def run_simulation():
     plt.xlabel('Probability p')
     plt.ylabel('Average Shortest Path Length')
     plt.grid(True)
-    plt.savefig('average_path_length.pdf')
+    plt.savefig(name_of_file)
     plt.show()
 
 
@@ -207,24 +210,32 @@ def simulation():
 
 
 
-# # Problem 10(a)
-# def create_fb_graph(filename = "facebook_combined.txt") -> UndirectedGraph:
-#     ''' This method should return a undirected version of the facebook graph as an instance of the UndirectedGraph class.
-#     You may assume that the input graph has 4039 nodes.'''    
-    
-#     for line in open(filename):
+# Problem 10(a)
+def create_fb_graph(filename = "facebook_combined.txt") -> UndirectedGraph:
+    ''' This method should return a undirected version of the facebook graph as an instance of the UndirectedGraph class.
+    You may assume that the input graph has 4039 nodes.'''    
+    returned = UndirectedGraph(FB_GRAPH_SIZE)
+
+    try:
+        for line in open(filename):
+            returned.add_edge(*(int(node) for node in line.split()))
+    except:
+        print("File related error")
+
+    return returned
         
 
 # Please include any additional code you use for analysis, or to generate graphs, here.
 # Problem 9(c) if applicable.
 # Problem 9(d)
 # Problem 10(b)
-# Problem 10(c) if applicable.
-# Problem 10(d) if applicable.
+fb_graph = create_fb_graph()
+print(f"Avg estimated shortest path of facebook graph is: {avg_shortest_path(fb_graph)}")
+# Problem 10(d)
+run_simulation(FB_GRAPH_SIZE, 'average_path_length_fb.pdf')
 
 
 # Example of usage and simulation
 if __name__ == "__main__":
-    run_simulation()
-
+    run_simulation(1000, 'average_path_length.pdf')
 
