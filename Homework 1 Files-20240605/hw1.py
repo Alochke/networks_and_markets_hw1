@@ -16,6 +16,7 @@ import random
 # and attributes as needed.
 
 FB_GRAPH_SIZE = 4039
+FB_GRAPH_NUM_PAIRS = (FB_GRAPH_SIZE * (FB_GRAPH_SIZE - 1)) / 2
 
 class UndirectedGraph:
     def __init__(self, number_of_nodes):
@@ -180,7 +181,7 @@ def run_simulation(num_of_nodes, name_of_file):
     for p in ps:
         avg_path_length = simulate_average_path_length(num_of_nodes, p, seed=42)
         avg_path_lengths.append(avg_path_length)
-        print(f"p = {p:.2f}, Average Path Length: {avg_path_length:.4f}")
+        print(f"p = {p:.2f}, Average Path Lenth: {avg_path_length:.4f}")
 
     # Plotting the results
     plt.figure(figsize=(10, 6))
@@ -190,7 +191,6 @@ def run_simulation(num_of_nodes, name_of_file):
     plt.ylabel('Average Shortest Path Length')
     plt.grid(True)
     plt.savefig(name_of_file)
-    plt.show()
 
 
 #simulation of 9(a) 9(b) and 9(c)
@@ -221,6 +221,7 @@ def create_fb_graph(filename = "facebook_combined.txt") -> UndirectedGraph:
             returned.add_edge(*(int(node) for node in line.split()))
     except:
         print("File related error")
+        exit()
 
     return returned
         
@@ -228,14 +229,22 @@ def create_fb_graph(filename = "facebook_combined.txt") -> UndirectedGraph:
 # Please include any additional code you use for analysis, or to generate graphs, here.
 # Problem 9(c) if applicable.
 # Problem 9(d)
+print("Question 9 mesurments:")
+print()
+run_simulation(1000, 'average_path_length.png')
+print()
 # Problem 10(b)
+print("Question 10 mesurments:")
+print()
 fb_graph = create_fb_graph()
 print(f"Avg estimated shortest path of facebook graph is: {avg_shortest_path(fb_graph)}")
+# Problem 10(c) if applicable.
+total_connected = 0
+for i in range(fb_graph.num_nodes):
+    for j in range(i + 1, fb_graph.num_nodes):
+        if fb_graph.check_edge(i, j):
+            total_connected += 1
+print(f"Probability two nodes are connected in the facebook graph is: {total_connected / FB_GRAPH_NUM_PAIRS}")
 # Problem 10(d)
-run_simulation(FB_GRAPH_SIZE, 'average_path_length_fb.pdf')
-
-
-# Example of usage and simulation
-if __name__ == "__main__":
-    run_simulation(1000, 'average_path_length.pdf')
-
+print("Repeating part (9d)'s experiment for a random graph with 4039 nodes.")
+run_simulation(FB_GRAPH_SIZE, 'average_path_length_fb.png')
