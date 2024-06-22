@@ -124,6 +124,44 @@ def shortest_path(G: UndirectedGraph, i: int, j: int) -> int:
     
     return -1  # Return -1 if no path is found
 
+def find_connected_components(G: UndirectedGraph):
+    """Finds the the connected component of an undirected Graph , 
+    Returns: set of all the connected component"""
+    visited = set()
+    components = []
+
+
+    def dfs(start_node):
+        stack = [start_node]
+        component = []
+        while stack:
+            node = stack.pop()
+            if node not in visited:
+                visited.add(node)
+                component.append(node)
+                # Add neighbors to stack
+                for neighbor in G.edges_from(node):
+                    if neighbor not in visited:
+                        stack.append(neighbor)
+        return component
+
+    for i in range(G.num_nodes):
+        if i not in visited:
+            component = dfs(i)
+            components.append(component)
+
+    return components
+
+def generate_reachable_node_pairs(components):
+    "return a List of tuples of indexes of all the nodes (i,j) that have are reachable from 1 to another "
+    all_pairs = []
+    for component in components:
+        # Generate all pairs within this component
+        for i in range(len(component)):
+            for j in range(i , len(component)):
+                all_pairs.append((component[i], component[j]))
+    return all_pairs
+
 #probelm 9(c)
 def avg_shortest_path(G, num_samples=1000, seed=None):
     """
@@ -145,18 +183,23 @@ def avg_shortest_path(G, num_samples=1000, seed=None):
     if len(nodes) < 2:
         return 0 # there is only one way and it is the empty way with distance 0
     
+    components = find_connected_components(G)
+    node_pairs = generate_reachable_node_pairs(components=components)
     while sampled_pairs < num_samples:
-        i, j = rng.choice(num_nodes, size=2, replace=False)
+        rechable_pair = rng.choice(node_pairs)
+        i , j = rechable_pair[0] , rechable_pair[1]
         path_length = shortest_path(G, i, j)
-        if path_length != -1:  # Ensure that nodes are connected
-            total_path_length += path_length
-            sampled_pairs += 1
+        total_path_length += path_length
+        sampled_pairs += 1
 
     return total_path_length / num_samples if sampled_pairs > 0 else -1
 
 
 def is_connected(G):
-    """ Check if the graph is connected """
+    """ Check if the graph is connected 
+        Returns:
+            True: if the graph is connected
+            False: if the graph is not connected."""
     start_node = 0
     queue = [start_node]
     visited = set([start_node])
@@ -225,26 +268,27 @@ def create_fb_graph(filename = "facebook_combined.txt") -> UndirectedGraph:
 
     return returned
         
-
-# Please include any additional code you use for analysis, or to generate graphs, here.
-# Problem 9(c) if applicable.
-# Problem 9(d)
-print("Question 9 mesurments:")
-print()
-run_simulation(1000, 'average_path_length.png')
-print()
-# Problem 10(b)
-print("Question 10 mesurments:")
-print()
-fb_graph = create_fb_graph()
-print(f"Avg estimated shortest path of facebook graph is: {avg_shortest_path(fb_graph)}")
-# Problem 10(c) if applicable.
-total_connected = 0
-for i in range(fb_graph.num_nodes):
-    for j in range(i + 1, fb_graph.num_nodes):
-        if fb_graph.check_edge(i, j):
-            total_connected += 1
-print(f"Probability two nodes are connected in the facebook graph is: {total_connected / FB_GRAPH_NUM_PAIRS}")
-# Problem 10(d)
-print("Repeating part (9d)'s experiment for a random graph with 4039 nodes.")
-run_simulation(FB_GRAPH_SIZE, 'average_path_length_fb.png')
+if __name__ == "__main__":
+    # Please include any additional code you use for analysis, or to generate graphs, here.
+    # Problem 9(c) if applicable.
+    # Problem 9(d)
+    print("Question 9 mesurments:")
+    print()
+    run_simulation(1000, 'average_path_length.png')
+    print()
+    # # Problem 10(b)
+    # print("Question 10 mesurments:")
+    # print()
+    # fb_graph = create_fb_graph()
+    # print(f"Avg estimated shortest path of facebook graph is: {avg_shortest_path(fb_graph)}")
+    # # Problem 10(c) if applicable.
+    # total_connected = 0
+    # for i in range(fb_graph.num_nodes):
+    #     for j in range(i + 1, fb_graph.num_nodes):
+    #         if fb_graph.check_edge(i, j):
+    #             total_connected += 1
+    # print(f"Probability two nodes are connected in the facebook graph is: {total_connected / FB_GRAPH_NUM_PAIRS}")
+    # # Problem 10(d)
+    # print("Repeating part (9d)'s experiment for a random graph with 4039 nodes.")
+    # run_simulation(FB_GRAPH_SIZE, 'average_path_length_fb.png')
+    
