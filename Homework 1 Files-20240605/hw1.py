@@ -225,26 +225,26 @@ def create_fb_graph(filename = "facebook_combined.txt") -> UndirectedGraph:
 
     return returned
         
-
-# Please include any additional code you use for analysis, or to generate graphs, here.
-# Problem 9(c) if applicable.
-# Problem 9(d)
-print("Question 9 mesurments:")
-print()
-run_simulation(1000, 'average_path_length.png')
-print()
-# Problem 10(b)
-print("Question 10 mesurments:")
-print()
-fb_graph = create_fb_graph()
-print(f"Avg estimated shortest path of facebook graph is: {avg_shortest_path(fb_graph)}")
-# Problem 10(c) if applicable.
-total_connected = 0
-for i in range(fb_graph.num_nodes):
-    for j in range(i + 1, fb_graph.num_nodes):
-        if fb_graph.check_edge(i, j):
-            total_connected += 1
-print(f"Probability two nodes are connected in the facebook graph is: {total_connected / FB_GRAPH_NUM_PAIRS}")
-# Problem 10(d)
-print("Repeating part (9d)'s experiment for a random graph with 4039 nodes.")
-run_simulation(FB_GRAPH_SIZE, 'average_path_length_fb.png')
+if __name__ == '__main__':
+    # Please include any additional code you use for analysis, or to generate graphs, here.
+    # Problem 9(c) if applicable.
+    # Problem 9(d)
+    print("Question 9 mesurments:")
+    print()
+    run_simulation(1000, 'average_path_length.png')
+    print()
+    # Problem 10(b)
+    print("Question 10 mesurments:")
+    print()
+    fb_graph = create_fb_graph()
+    print(f"Avg estimated shortest path of facebook graph is: {avg_shortest_path(fb_graph)}")
+    # Problem 10(c) if applicable.
+    total_connected = 0
+    for i in range(fb_graph.num_nodes):
+        for j in range(i + 1, fb_graph.num_nodes):
+            if fb_graph.check_edge(i, j):
+                total_connected += 1
+    print(f"Probability two nodes are connected in the facebook graph is: {total_connected / FB_GRAPH_NUM_PAIRS}")
+    # Problem 10(d)
+    print("Repeating part (9d)'s experiment for a random graph with 4039 nodes.")
+    run_simulation(FB_GRAPH_SIZE, 'average_path_length_fb.png')
