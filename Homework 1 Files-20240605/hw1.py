@@ -8,15 +8,17 @@
 
 # Do not include any other files or an external package, unless it is one of
 # [numpy, pandas, scipy, matplotlib, random]
-# please contact us before sumission if you want another package approved.
+# please contact us before submission if you want another package approved.
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+
 # Implement the methods in this class as appropriate. Feel free to add other methods
 # and attributes as needed.
 
 FB_GRAPH_SIZE = 4039
 FB_GRAPH_NUM_PAIRS = (FB_GRAPH_SIZE * (FB_GRAPH_SIZE - 1)) / 2
+
 
 class UndirectedGraph:
     def __init__(self, number_of_nodes):
@@ -28,7 +30,7 @@ class UndirectedGraph:
         """
         self.num_nodes = number_of_nodes
         self.adj_matrix = np.zeros((number_of_nodes, number_of_nodes), dtype=int)
-    
+
     def add_edge(self, nodeA, nodeB):
         """
         Add an undirected edge to the graph between nodeA and nodeB.
@@ -38,7 +40,7 @@ class UndirectedGraph:
         """
         self.adj_matrix[nodeA][nodeB] = 1
         self.adj_matrix[nodeB][nodeA] = 1
-    
+
     def edges_from(self, nodeA):
         """
         Return a list of all nodes connected to nodeA by an edge.
@@ -48,7 +50,7 @@ class UndirectedGraph:
             list[int]: List of nodes that have an edge with nodeA.
         """
         return list(np.where(self.adj_matrix[nodeA] == 1)[0])
-    
+
     def check_edge(self, nodeA, nodeB):
         """
         Check if there is an edge between nodeA and nodeB.
@@ -59,7 +61,7 @@ class UndirectedGraph:
             bool: True if there is an edge, False otherwise.
         """
         return self.adj_matrix[nodeA][nodeB] == 1
-    
+
     def number_of_nodes(self):
         """
         Return the number of nodes in the graph.
@@ -67,11 +69,10 @@ class UndirectedGraph:
             int: The number of nodes in the graph.
         """
         return self.num_nodes
-    
+
     def print_graph(self):
         print("Adjacency Matrix:")
         print(self.adj_matrix)
-
 
 
 # Problem 9(a)
@@ -93,8 +94,9 @@ def create_graph(n, p, seed=None):
             if rng.random() < p:  # Use rng to determine edge creation
                 graph.add_edge(i, j)
     return graph
+
 # Problem 9(b)
-def shortest_path(G: UndirectedGraph, i: int, j: int) -> int:
+def shortest_path(G, i, j):
     """
     Finds the shortest path from node i to node j using a BFS algorithm.
     Args:
@@ -106,14 +108,14 @@ def shortest_path(G: UndirectedGraph, i: int, j: int) -> int:
     """
     if i == j:  # Check if start and end nodes are the same
         return 0
-    
+
     # Initialize a queue for BFS
     queue = [(i, 0)]  # Each element is a tuple (current_node, current_distance)
     visited = set([i])  # Keep track of visited nodes to prevent revisiting
-    
+
     while queue:
         current_node, current_distance = queue.pop(0)
-        
+
         # Iterate through each neighbor of the current node
         for neighbor in G.edges_from(current_node):
             if neighbor == j:
@@ -121,10 +123,10 @@ def shortest_path(G: UndirectedGraph, i: int, j: int) -> int:
             if neighbor not in visited:
                 visited.add(neighbor)
                 queue.append((neighbor, current_distance + 1))
-    
+
     return -1  # Return -1 if no path is found
 
-#probelm 9(c)
+# Problem 9(c)
 def avg_shortest_path(G, num_samples=1000, seed=None):
     """
     Estimate the average shortest path length by randomly sampling connected node pairs.
@@ -136,15 +138,15 @@ def avg_shortest_path(G, num_samples=1000, seed=None):
         float: The estimated average shortest path length.
     """
     rng = np.random.default_rng(seed)
-    
+
     nodes = np.arange(G.num_nodes)
     num_nodes = len(nodes)
     total_path_length = 0
     sampled_pairs = 0
 
     if len(nodes) < 2:
-        return 0 # there is only one way and it is the empty way with distance 0
-    
+        return 0  # There is only one path and it is the empty path with distance 0
+
     while sampled_pairs < num_samples:
         i, j = rng.choice(num_nodes, size=2, replace=False)
         path_length = shortest_path(G, i, j)
@@ -155,8 +157,8 @@ def avg_shortest_path(G, num_samples=1000, seed=None):
     return total_path_length / num_samples if sampled_pairs > 0 else -1
 
 
-def is_connected(G):
-    """ Check if the graph is connected """
+def is_connected_graph(G):
+    """ Check if the graph G is connected """
     start_node = 0
     queue = [start_node]
     visited = set([start_node])
@@ -171,9 +173,10 @@ def is_connected(G):
 def simulate_average_path_length(n, p, seed=None):
     while True:
         graph = create_graph(n, p, seed)
-        if is_connected(graph):
+        if is_connected_graph(graph):  # for 9(d), only sample connected graphs for the purposes of gathering data
             return avg_shortest_path(graph, 1000, seed)
 
+# simulation for 9(c), 9(d)
 def run_simulation(num_of_nodes, name_of_file):
     ps = np.concatenate((np.arange(0.01, 0.05, 0.01), np.arange(0.05, 0.51, 0.05)))
     avg_path_lengths = []
@@ -181,7 +184,7 @@ def run_simulation(num_of_nodes, name_of_file):
     for p in ps:
         avg_path_length = simulate_average_path_length(num_of_nodes, p, seed=42)
         avg_path_lengths.append(avg_path_length)
-        print(f"p = {p:.2f}, Average Path Lenth: {avg_path_length:.4f}")
+        print(f"p = {p:.2f}, Average Path Length: {avg_path_length:.4f}")
 
     # Plotting the results
     plt.figure(figsize=(10, 6))
@@ -193,27 +196,10 @@ def run_simulation(num_of_nodes, name_of_file):
     plt.savefig(name_of_file)
 
 
-#simulation of 9(a) 9(b) and 9(c)
-def simulation():
-    n = 10  # Number of nodes in the graph
-    p = 0.3  # Probability of edge creation
-    seed = 42  # Seed for reproducibility
-
-    # Create the graph
-    graph = create_graph(n, p, seed)
-    
-    # Print the graph's adjacency matrix
-    graph.print_graph()
-    # Compute and print the average shortest path length
-    avg_path_length = avg_shortest_path(graph, num_samples=1000, seed=seed)
-    print(f"Average shortest path length (estimated from {1000} samples): {avg_path_length:.4f}")
-
-
-
 # Problem 10(a)
 def create_fb_graph(filename = "facebook_combined.txt") -> UndirectedGraph:
-    ''' This method should return a undirected version of the facebook graph as an instance of the UndirectedGraph class.
-    You may assume that the input graph has 4039 nodes.'''    
+    ''' This method should return an undirected version of the facebook graph as an instance of the UndirectedGraph class.
+    You may assume that the input graph has 4039 nodes.'''
     returned = UndirectedGraph(FB_GRAPH_SIZE)
 
     try:
@@ -224,27 +210,28 @@ def create_fb_graph(filename = "facebook_combined.txt") -> UndirectedGraph:
         exit()
 
     return returned
-        
+
 if __name__ == '__main__':
     # Please include any additional code you use for analysis, or to generate graphs, here.
     # Problem 9(c) if applicable.
     # Problem 9(d)
-    print("Question 9 mesurments:")
+    print("Question 9 measurements:")
     print()
     run_simulation(1000, 'average_path_length.png')
     print()
     # Problem 10(b)
-    print("Question 10 mesurments:")
+    print("Question 10 measurements:")
     print()
     fb_graph = create_fb_graph()
-    print(f"Avg estimated shortest path of facebook graph is: {avg_shortest_path(fb_graph)}")
+    print(f"Avg estimated shortest path length of facebook graph is: {avg_shortest_path(fb_graph)}")
     # Problem 10(c) if applicable.
     total_connected = 0
     for i in range(fb_graph.num_nodes):
         for j in range(i + 1, fb_graph.num_nodes):
             if fb_graph.check_edge(i, j):
                 total_connected += 1
-    print(f"Probability two nodes are connected in the facebook graph is: {total_connected / FB_GRAPH_NUM_PAIRS}")
+    p_fb = total_connected / FB_GRAPH_NUM_PAIRS
+    print(f"Probability that two nodes are connected in the facebook graph is: {p_fb}")
     # Problem 10(d)
-    print("Repeating part (9d)'s experiment for a random graph with 4039 nodes.")
-    run_simulation(FB_GRAPH_SIZE, 'average_path_length_fb.png')
+    print(f"Repeating part (9c)'s experiment for a random graph with {FB_GRAPH_SIZE} nodes.")
+    print(f"Average Path Length: {simulate_average_path_length(FB_GRAPH_SIZE, p_fb, seed=42)}")
